@@ -9,12 +9,19 @@ from pathlib import WindowsPath as Path
 from psutil import Process
 
 from app_manager import AppProcessManager
-from app_window import Window
+from app_window import AppWindow, WindowsScanner
 from app_version import ApplicationVersion
 
 
 class Application:
     """
+        The abstract application class. He can:
+             - find out the application version from its executable file;
+             - run the application;
+             - terminate its work, via proc.terminate();
+             - control the state of the application, running not running;
+             - control the application window: make it top, bottom, minimize, maximize.
+
         Класс абстрактного приложения. Он умеет:
             - узнавать версию приложения из его исполняемого файла;
             - запускать приложение;
@@ -77,17 +84,8 @@ class Application:
             созданные процессом приложения.
             Результат вернется в виде списка экземпляров класса 'Window'.
         """
+        return WindowsScanner.get_process_windows(self.process.pid)
 
-        def callback(hwnd, hwnds):
-            if win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd):
-                _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
-                if found_pid == self.process.pid:
-                    hwnds.append(hwnd)
-            return True
-
-        hwnds = []
-        win32gui.EnumWindows(callback, hwnds)
-        return [Window(hwnd, win32gui.GetWindowText(hwnd)) for hwnd in hwnds]
 
     def _get_app_main_window(self) -> object:
         """ Получить главное окно приложения. """

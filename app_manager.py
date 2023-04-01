@@ -62,4 +62,4 @@ if __name__ == "__main__":
     # Чтобы получить объект процесса, который был запущен последним возьмите processes[-1]
     processes = AppProcessManager.get_processes_by(partial_name='Chrome')
     for p in processes:
-        print(p.exe())
+        print(p)
